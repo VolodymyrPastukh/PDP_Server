@@ -6,7 +6,7 @@ services:
     image: dockerhub-flask_live_app:1.0.0
     build: ./server
     ports:
-      - "666:4000"
+      - "80:4000"
     environment:
       - DB_URL=postgresql://postgres:postgres@flask_db:5432/postgres
       - CRPT_KEY=br19syb6rnGH6vR1
