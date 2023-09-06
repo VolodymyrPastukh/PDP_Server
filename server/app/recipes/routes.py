@@ -3,6 +3,7 @@ from app.recipes import bp
 from app.models.authorization import Authorization
 from app.models.recipe import Recipe, RecipeStep
 from app.extensions import db
+from app.storage import upload_image
 from app.utils.json_utils import success_response, failure_response, error_response
 
 @bp.route('/', methods=['POST'])
@@ -17,16 +18,22 @@ def create_recipe():
     if not auth_header in list(map(lambda auth: auth.access_key, Authorization.query.filter_by(author_id=data['author_id']))):
         return make_response(failure_response('you have no access'), 200)
 
-    new_recipe = Recipe(author_id=data['author_id'], recipe_title=data['recipe_title'], recipe_country=data['recipe_country'], recipe_description=data['recipe_description'])
+    author_id = data['author_id']
+    recipe_title = recipe_title=data['recipe_title']
+    recipe_img_url = upload_image(data['recipe_img'], image_prefix=f'{author_id}_{recipe_title}')
+
+    new_recipe = Recipe(author_id=author_id, recipe_title=recipe_title, recipe_country=data['recipe_country'], recipe_description=data['recipe_description'], recipe_img=recipe_img_url)
 
     new_recipe_steps = []
     for step in data['steps']:
-        new_recipe_steps.append(RecipeStep(recipe=new_recipe, recipe_step_title=step['recipe_step_title'], recipe_step_instruction=step['recipe_step_instruction'],recipe_step_duration_millis=step['recipe_step_duration_millis']))
+        step_title = step['recipe_step_title']
+        step_img_url = upload_image(step['recipe_step_img'], image_prefix=f'{author_id}_{recipe_title}_{step_title}')
+        new_recipe_steps.append(RecipeStep(recipe=new_recipe, recipe_step_title=step_title, recipe_step_instruction=step['recipe_step_instruction'],recipe_step_duration_millis=step['recipe_step_duration_millis'], recipe_step_img=step_img_url))
 
     db.session.add(new_recipe)
     db.session.add_all(new_recipe_steps)
     db.session.commit()
-    return make_response(success_response(result=new_recipe.json(steps=RecipeStep.query.filter_by(recipe_id=new_recipe.id)), message='recipe created'), 200)
+    return make_response(success_response(message='recipe created'), 200)
   except e:
     return make_response(error_response('error creating recipe'), 500)
 

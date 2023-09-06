@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response
 from os import environ
 from app.extensions import db
+from app.storage import bucket
 
 from app.main import bp as main_bp
 from app.authors import bp as authors_bp
@@ -18,4 +19,5 @@ app.register_blueprint(recipes_bp, url_prefix='/recipes')
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
 with app.app_context():
+    db.drop_all()
     db.create_all()
