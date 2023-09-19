@@ -13,6 +13,19 @@ services:
     depends_on:
       - flask_db
 
+  nginx:
+    image: nginx:1.19-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/cache:/etc/nginx/cache
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/ssl/bot:/etc/nginx/ssl/bot
+  depends_on:
+    - flask_app
+
   flask_db:
     container_name: flask_db
     image: postgres:12
