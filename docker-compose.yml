@@ -23,8 +23,8 @@ services:
       - ./nginx/cache:/etc/nginx/cache
       - ./nginx/ssl:/etc/nginx/ssl
       - ./nginx/ssl/bot:/etc/nginx/ssl/bot
-  depends_on:
-    - flask_app
+    depends_on:
+      - flask_app
 
   flask_db:
     container_name: flask_db
