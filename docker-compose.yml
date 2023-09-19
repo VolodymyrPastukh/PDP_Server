@@ -6,25 +6,12 @@ services:
     image: dockerhub-flask_live_app:1.0.0
     build: ./server
     ports:
-      - "80:4000"
+      - "4000:4000"
     environment:
       - DB_URL=postgresql://postgres:postgres@flask_db:5432/postgres
       - CRPT_KEY=br19syb6rnGH6vR1
     depends_on:
       - flask_db
-
-  nginx:
-    image: nginx:1.19-alpine
-    ports:
-      - "666:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/cache:/etc/nginx/cache
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./nginx/ssl/bot:/etc/nginx/ssl/bot
-    depends_on:
-      - flask_app
 
   flask_db:
     container_name: flask_db
